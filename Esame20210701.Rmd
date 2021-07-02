@@ -1,0 +1,22 @@
+---
+title: "VIQ - Esame 1 Luglio 2021"
+date: '2021-07-01'
+output: html_document
+---
+
+```{r import delle librerie,include=FALSE}
+library(tidyverse)
+```
+
+### Dataset
+
+Si consideri il seguente frammento di grafico pubblicato dal [Visual Capitalist](https://www.visualcapitalist.com/ranking-the-countries-with-the-largest-proven-global-oil-reserves-in-the-world/) che indica la frazione di riserve di petrolio in diversi paesi.
+
+![](Share_of_Global_Oil_Reserves_Black02.jpg)
+
+## Design
+
+Riprogettare la visualizzazione in modo da risolvere i problemi evidenziati nell'analisi.
+
+
+
