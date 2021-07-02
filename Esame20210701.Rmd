@@ -2,10 +2,20 @@
 title: "VIQ - Esame 1 Luglio 2021"
 date: '2021-07-01'
 output: html_document
+runtime: shiny
 ---
 
 ```{r import delle librerie,include=FALSE}
 library(tidyverse)
+library(shiny)
+library(patchwork)
+library(ggrepel)
+library(magrittr)
+library(readr)
+library(ggplot2)
+library(treemapify)
+library(waffle)
+
 ```
 
 ### Dataset
@@ -19,4 +29,65 @@ Si consideri il seguente frammento di grafico pubblicato dal [Visual Capitalist]
 Riprogettare la visualizzazione in modo da risolvere i problemi evidenziati nell'analisi.
 
 
+```{r}
+data <- read_csv("data.csv")
 
+#Ordino nazioni per percentuale decrescente, cambio OPEC, aggiungo colonna
+#cumulativa
+
+data %<>%
+  mutate(
+    Nazione=fct_reorder(Nazione, desc(Percentuale)),
+    OPEC=if_else(OPEC, "OPEC", "non-OPEC")
+  ) %>%
+  arrange(Nazione) %>%
+  mutate(cumul=cumsum(Percentuale))
+
+#Funzione per stampa percentuale con 1 cifra decimale
+format_percent = function(x) {
+  paste0(format(round(x, 1), nsmall=1), '%')
+}
+
+
+tipi_grafico <- c("Pareto","Treemap","Waffle")
+radioButtons("tipo_grafico", "Tipo grafico", tipi_grafico)
+
+tipo_grafico <- reactive(input$tipo_grafico)
+
+renderPlot({
+  if (tipo_grafico() == 'Pareto'){
+    data %>%
+      ggplot(aes(y=Nazione)) +
+      geom_path(aes(x=cumul, group=1), color="orange", size=1, lineend = "round") +
+      geom_point(aes(x=cumul), color="white", shape=16, size=5) +
+      geom_bar(aes(x=Percentuale, fill=OPEC), stat='identity') +
+      geom_point(aes(x=cumul), color="orange", shape=16, size=2) +
+      geom_text(aes(x=cumul, label=format_percent(cumul)), hjust=-0.5, size = 3) +
+      geom_text(
+        data=data %>% filter(Nazione!='Venezuela'),
+        aes(x=Percentuale, label=format_percent(Percentuale)),
+        position = position_dodge(width = .9),
+        hjust = 0,
+        size = 3
+      ) + 
+      scale_x_continuous(
+        labels=function(x) paste0(x, "%"),
+        limits=c(NA, 108),
+        breaks=seq(0, 100, by = 20)
+      ) +
+      scale_fill_brewer(palette="Paired") +
+      scale_y_discrete(limits=rev) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(hjust = 0.5),
+        legend.title=element_blank()
+      ) +
+      labs(
+        title="Distribuzione dei giacimenti di petrolio",
+        y="Nazioni",
+        x="Percentuale"
+      )
+  }
+})
+
+```
