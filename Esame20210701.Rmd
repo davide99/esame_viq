@@ -59,8 +59,9 @@ filtered_data <- reactive({
   data %>% filter(OPEC %in% categoria())
 })
 
+plotOutput("plot", hover=hoverOpts(id="h",delayType="debounce",delay=100))
 
-renderPlot({
+output$plot <- renderPlot({
   #Se nessuna categoria selezionata=>non mostro niente
   req(categoria())
   
@@ -87,13 +88,13 @@ renderPlot({
       geom_bar(aes(x=Percentuale, fill=OPEC), stat='identity') +
       geom_point(aes(x=cumul), color="orange", shape=16, size=2) +
       geom_text(aes(x=cumul, label=format_percent(cumul)), hjust=-0.5, size=3) +
-      geom_text(
-        data=tmp_data %>% filter(Nazione!=top_nazione),
-        aes(x=Percentuale, label=format_percent(Percentuale)),
-        position = position_dodge(width = .9),
-        hjust = 0,
-        size = 3
-      ) + 
+      #geom_text(
+      #  data=tmp_data %>% filter(Nazione!=top_nazione),
+      #  aes(x=Percentuale, label=format_percent(Percentuale)),
+      #  position = position_dodge(width = .9),
+      #  hjust = 0,
+      #  size = 3
+      #) + 
       scale_x_continuous(
         labels=function(x) paste0(x, "%"),
         limits=c(NA, top_cumul*1.08),
@@ -111,7 +112,18 @@ renderPlot({
         title="Distribuzione dei giacimenti di petrolio",
         y="Nazioni",
         x="Percentuale"
-      )
+      ) -> p
+    
+    hovered <- nearPoints(tmp_data, input$h, threshold = 10)
+    if(!is.null(hovered) && dim(hovered[1])>0){
+      p <- p +
+        geom_text(data=hovered, aes(x=Percentuale, label=format_percent(Percentuale)),
+                  position = position_dodge(width = .9),
+        hjust = 0,
+        size = 3)
+    }
+    
+    p
   }else if(tipo_grafico()=='Treemap'){
     filtered_data() %>%
       ggplot(aes(area=Percentuale, fill=OPEC, label=Nazione, subgroup=OPEC)) +
@@ -219,7 +231,18 @@ renderPlot({
         legend.position="none",
         plot.title=element_text(hjust = 0.5)
       ) +
-      labs(title="Distribuzione dei giacimenti di petrolio")
+      labs(title="Distribuzione dei giacimenti di petrolio") -> p
+    
+    hovered <- nearPoints(waffle_data, input$h, threshold = 10)
+    if(!is.null(hovered) && dim(hovered[1])>0){
+      p <- p +
+        geom_text(data=hovered, aes(x=x, y=y, label=group),
+                  position = position_dodge(width = .9),
+        hjust = 0,
+        size = 3)
+    }
+    
+    p
   }
 })
 
