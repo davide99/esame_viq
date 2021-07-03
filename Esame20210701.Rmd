@@ -195,9 +195,13 @@ renderPlot({
         segment.linetype = 1,
         segment.color = "grey50"
       ) +
-      discrete_scale(aesthetics = "fill", scale_name = "waffle", palette=waffle_pal()) +
+      discrete_scale(
+        aesthetics = "fill",
+        scale_name = "waffle",
+        palette=waffle_pal()
+      ) +
       scale_y_discrete(expand = expansion(mult = 0.2))+
-      ylab("1 quad = 10 bilioni di barili") +
+      ylab("1 quad = 10 bln di barili") +
       theme_waffle() +
       theme(
         axis.title.x=element_blank(),
