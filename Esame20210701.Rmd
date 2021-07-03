@@ -132,6 +132,7 @@ renderPlot({
   }else{ #Waffle
     waffle_data <-
       data %>%
+      filter(OPEC %in% categoria()) %>%
       mutate(
         Nazione=as.character(Nazione),
         Bln_barili=Bln_barili/10
