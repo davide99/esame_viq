@@ -105,6 +105,27 @@ renderPlot({
       y="Nazioni",
       x="Percentuale"
     )
+  }else if(tipo_grafico()=='Treemap'){
+    data %>%
+      filter(OPEC %in% categoria()) %>%
+      ggplot(aes(area=Percentuale, fill=OPEC, label=Nazione, subgroup=OPEC)) +
+      geom_treemap() +
+      geom_treemap_subgroup_border() +
+      geom_treemap_subgroup_text(
+        place="centre",
+        grow=TRUE,
+        alpha=0.5,
+        colour="black",
+        fontface="italic",
+        min.size=0,
+        angle=45
+      ) +
+      geom_treemap_text(
+        aes(label=paste0(Nazione, format_percent(Percentuale))),
+        colour="white",
+        place="centre"
+      ) +
+      theme(legend.position = 0)
   }
 })
 
