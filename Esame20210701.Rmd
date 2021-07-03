@@ -29,7 +29,7 @@ Si consideri il seguente frammento di grafico pubblicato dal [Visual Capitalist]
 Riprogettare la visualizzazione in modo da risolvere i problemi evidenziati nell'analisi.
 
 
-```{r}
+```{r, echo=FALSE}
 data <- read_csv("data.csv")
 
 
@@ -56,6 +56,9 @@ categoria <- reactive(input$categoria)
 
 
 renderPlot({
+  #Se nessuna categoria selezionata=>non mostro niente
+  req(categoria())
+  
   if (tipo_grafico() == 'Pareto'){
     tmp_data <- 
       data %>%
@@ -63,10 +66,13 @@ renderPlot({
       mutate(Nazione=fct_reorder(Nazione, desc(Percentuale))) %>%
       arrange(Nazione) %>%
       mutate(cumul=cumsum(Percentuale))
-    browser()
+    
+    #Salvo la nazione con la percentuale maggiore: mi serve per evitare di
+    #stampare la stessa percentuale 2 volte, cioè sulla geom_path e sulla
+    #geom_bar
+    top_nazione <- (tmp_data %>% filter(Percentuale==max(Percentuale)))$Nazione
     
     tmp_data %>%
-    arrange(Nazione) %>%
     ggplot(aes(y=Nazione)) +
     geom_path(aes(x=cumul, group=1), color="orange", size=1, lineend = "round") +
     geom_point(aes(x=cumul), color="white", shape=16, size=5) +
@@ -74,7 +80,7 @@ renderPlot({
     geom_point(aes(x=cumul), color="orange", shape=16, size=2) +
     geom_text(aes(x=cumul, label=format_percent(cumul)), hjust=-0.5, size = 3) +
     geom_text(
-      data=tmp_data %>% filter(Nazione!='Venezuela'),
+      data=tmp_data %>% filter(Nazione!=top_nazione),
       aes(x=Percentuale, label=format_percent(Percentuale)),
       position = position_dodge(width = .9),
       hjust = 0,
