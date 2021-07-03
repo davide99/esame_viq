@@ -114,14 +114,14 @@ renderPlot({
       geom_treemap_subgroup_text(
         place="centre",
         grow=TRUE,
-        alpha=0.5,
+        alpha=if_else(length(categoria())==2, 0.5, 0),
         colour="black",
         fontface="italic",
         min.size=0,
         angle=45
       ) +
       geom_treemap_text(
-        aes(label=paste0(Nazione, format_percent(Percentuale))),
+        aes(label=paste0(Nazione, "\n", format_percent(Percentuale))),
         colour="white",
         place="centre"
       ) +
