@@ -30,7 +30,7 @@ Riprogettare la visualizzazione in modo da risolvere i problemi evidenziati nell
 
 
 ```{r, echo=FALSE}
-data <- read_csv("data.csv")
+data <- read_csv("data.csv",col_types = cols())
 
 
 OPEC_cat <- "OPEC"
@@ -71,6 +71,7 @@ renderPlot({
     #stampare la stessa percentuale 2 volte, cioè sulla geom_path e sulla
     #geom_bar
     top_nazione <- (tmp_data %>% filter(Percentuale==max(Percentuale)))$Nazione
+    top_cumul <- (tmp_data %>% filter(cumul==max(cumul)))$cumul
     
     tmp_data %>%
     ggplot(aes(y=Nazione)) +
@@ -88,7 +89,7 @@ renderPlot({
     ) + 
     scale_x_continuous(
       labels=function(x) paste0(x, "%"),
-      limits=c(NA, 108),
+      limits=c(NA, top_cumul*1.08),
       breaks=seq(0, 100, by = 20)
     ) +
     scale_fill_brewer(palette="Paired") +
