@@ -96,7 +96,8 @@ renderPlot({
     theme_minimal() +
     theme(
       plot.title = element_text(hjust = 0.5),
-      legend.title=element_blank()
+      legend.title=element_blank(),
+      legend.position = if_else(length(categoria())==2, "right", "none")
     ) +
     labs(
       title="Distribuzione dei giacimenti di petrolio",
