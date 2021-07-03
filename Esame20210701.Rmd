@@ -30,8 +30,9 @@ Riprogettare la visualizzazione in modo da risolvere i problemi evidenziati nell
 
 
 ```{r, echo=FALSE}
-data <- read_csv("data.csv",col_types = cols())
-
+data <-
+  read_csv("data.csv",col_types = cols()) %>%
+  mutate(Bln_barili=if_else(is.na(Bln_barili), 107*Percentuale/6.2 ,Bln_barili))
 
 OPEC_cat <- "OPEC"
 nonOPEC_cat <- "non-OPEC"
@@ -126,6 +127,8 @@ renderPlot({
         place="centre"
       ) +
       theme(legend.position = 0)
+  }else{ #Waffle
+    
   }
 })
 
