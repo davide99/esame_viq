@@ -180,12 +180,13 @@ output$pareto <- renderPlot({
     dim(hovered_pareto() %>% filter(Nazione != top_nazione))[1]>0
   ){
     p <- p +
-      geom_text(
+      geom_label(
         data=hovered_pareto() %>% filter(Nazione != top_nazione),
         aes(x=Nazione, y=Percentuale, label=format_percent(Percentuale)),
         position = position_dodge(width = .9),
         vjust = -0.5,
-        size = 5
+        size = 5,
+        fill = "white"
       ) 
   }
   
