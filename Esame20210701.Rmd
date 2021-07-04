@@ -107,7 +107,7 @@ plotOutput("waffle", hover=hoverOpts(id="h_waffle",delayType="debounce",delay=10
 ```{r, echo=FALSE}
 hovered_pareto <- reactiveVal(NULL)
 observeEvent(input$h_pareto,{
-  hovered_pareto(nearPoints(pareto_data(), input$h_pareto, threshold=30, xvar="Percentuale", maxpoints=1))
+  hovered_pareto(nearPoints(pareto_data(), input$h_pareto, threshold=30, yvar="Percentuale", maxpoints=1))
 })
 
 hovered_waffle <- reactiveVal(NULL)
@@ -127,19 +127,19 @@ output$pareto <- renderPlot({
   top_cumul <- (pareto_data() %>% filter(cumul==max(cumul)))$cumul
   
   pareto_data() %>%
-    ggplot(aes(y=Nazione)) +
-    geom_path(aes(x=cumul, group=1), color="orange", size=1, lineend="round") +
-    geom_point(aes(x=cumul), color="white", shape=16, size=5) + #outline punto
-    geom_bar(aes(x=Percentuale, fill=OPEC), stat='identity') +
-    geom_point(aes(x=cumul), color="orange", shape=16, size=2) +
-    geom_text(aes(x=cumul, label=format_percent(cumul)), hjust=-0.5, size=3) +
-    scale_x_continuous(
-      labels=function(x) paste0(x, "%"),
+    ggplot(aes(x=Nazione)) +
+    geom_path(aes(y=cumul, group=1), color="orange", size=1, lineend="round") +
+    geom_point(aes(y=cumul), color="white", shape=16, size=5) + #outline punto
+    geom_bar(aes(y=Percentuale, fill=OPEC), stat='identity') +
+    geom_point(aes(y=cumul), color="orange", shape=16, size=2) +
+    geom_text(aes(y=cumul, label=format_percent(cumul)), vjust=-0.5, size=3) +
+    scale_y_continuous(
+      labels=function(y) paste0(y, "%"),
       limits=c(NA, top_cumul*1.08),
       breaks=seq(0, 100, by = 20)
     ) +
     scale_fill_brewer(palette="Paired") +
-    scale_y_discrete(limits=rev) +
+    scale_x_discrete(guide = guide_axis(n.dodge=2)) +
     theme_minimal() +
     theme(
       plot.title=element_text(hjust = 0.5),
@@ -148,8 +148,8 @@ output$pareto <- renderPlot({
     ) +
     labs(
       title="Distribuzione dei giacimenti di petrolio",
-      y="Nazioni",
-      x="Percentuale"
+      x="Nazioni",
+      y="Percentuale"
     ) -> p
   
   if (
@@ -159,10 +159,10 @@ output$pareto <- renderPlot({
     p <- p +
       geom_text(
         data=hovered_pareto() %>% filter(Nazione != top_nazione),
-        aes(x=Percentuale, label=format_percent(Percentuale)),
+        aes(y=Percentuale, label=format_percent(Percentuale)),
         position = position_dodge(width = .9),
-        hjust = 0,
-        size = 3
+        vjust = -0.5,
+        size = 5
       ) 
   }
   
