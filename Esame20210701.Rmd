@@ -149,6 +149,7 @@ Svantaggi:
 
 * Rainbow effect a causa delle numerose nazioni
 * Nessuna suddivisione tra *OPEC*, *non-OPEC* e *mixed*
+* I quadrati non formato un vero rettangolo
 
 Hover su un quadrato per avere maggiori informazioni.
 ```{r, echo=FALSE}
