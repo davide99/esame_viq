@@ -98,7 +98,13 @@ plotOutput("pareto", hover=hoverOpts(id="h_pareto",delayType="debounce",delay=10
 ### Treemap
 Il secondo redesign è la *treemap*. Vantaggi:
 
-* Direct labeling delle nazioni *OPEC* e *non-OPEC*.
+* Direct labeling delle nazioni *OPEC* e *non-OPEC*
+* Facile individuare le nazioni con i maggiori giacimenti
+
+Svantaggi:
+
+* Confronto tra aree impreciso (legge di Stevens)
+* Le etichette *OPEC* e *non-OPEC* potrebbero essere elementi distrattivi
 ```{r treemap, echo=FALSE}
 plotOutput("treemap")
 ```
