@@ -119,6 +119,8 @@ Svantaggi:
 
 * Rainbow effect a causa delle numerose nazioni
 * Nessuna suddivisione tra *OPEC* e *non-OPEC*
+
+Hover su un quadrato per avere maggiori informazioni.
 ```{r, echo=FALSE}
 plotOutput("waffle", hover=hoverOpts(id="h_waffle",delayType="debounce",delay=100))
 ```
@@ -297,12 +299,18 @@ output$waffle <- renderPlot({
     labs(title="Distribuzione dei giacimenti di petrolio") -> p
   
   if (!is.null(hovered_waffle()) && dim(hovered_waffle())[1]>0){
+    joined_data <- 
+      hovered_waffle() %>%
+      inner_join(filtered_data(), by=c("group"="Nazione")) %>%
+      select(x, y, group, Percentuale)
+    
     p <- p +
-      geom_text(
-        data=hovered_waffle(),
-        aes(x=x, y=y, label=group),
+      geom_label(
+        data=joined_data,
+        aes(x=x, y=y, label=paste0(group, "\n", format_percent(Percentuale))),
         hjust = 0,
-        size = 5
+        size = 5,
+        fill = "white"
       ) 
   }
   
