@@ -96,7 +96,10 @@ plotOutput("pareto", hover=hoverOpts(id="h_pareto",delayType="debounce",delay=10
 ```
 
 ### Treemap
-```{r, echo=FALSE}
+Il secondo redesign è la *treemap*. Vantaggi:
+
+* Direct labeling delle nazioni *OPEC* e *non-OPEC*.
+```{r treemap, echo=FALSE}
 plotOutput("treemap")
 ```
 
@@ -115,6 +118,8 @@ hovered_waffle <- reactiveVal(NULL)
 observeEvent(input$h_waffle,{
   hovered_waffle(nearPoints(waffle_data(), input$h_waffle, threshold=10, maxpoints=1))
 })
+
+brew_palette <- "Set1"
 
 output$pareto <- renderPlot({
   #Se nessuna categoria selezionata=>non mostro niente
@@ -139,7 +144,7 @@ output$pareto <- renderPlot({
       limits=c(NA, top_cumul*1.03),
       breaks=seq(0, 100, by = 20)
     ) +
-    scale_fill_brewer(palette="Paired") +
+    scale_fill_brewer(palette=brew_palette) +
     scale_x_discrete(guide = guide_axis(n.dodge=2)) +
     theme_minimal() +
     theme(
@@ -196,6 +201,7 @@ output$treemap <- renderPlot({
       plot.title=element_text(hjust = 0.5),
       legend.position = 0
     ) +
+    scale_fill_brewer(palette=brew_palette) +
     labs(title="Distribuzione dei giacimenti di petrolio")
 })
 
