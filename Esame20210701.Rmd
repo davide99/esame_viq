@@ -30,7 +30,7 @@ Si consideri il seguente frammento di grafico pubblicato dal [Visual Capitalist]
 Riprogettare la visualizzazione in modo da risolvere i problemi evidenziati nell'analisi.
 
 
-```{r, echo=FALSE}
+```{r generazione dati, echo=FALSE}
 OPEC_cat <- "OPEC"
 nonOPEC_cat <- "non-OPEC"
 
@@ -135,7 +135,7 @@ output$pareto <- renderPlot({
     geom_text(aes(y=cumul, label=format_percent(cumul)), vjust=-0.5, size=3) +
     scale_y_continuous(
       labels=function(y) paste0(y, "%"),
-      limits=c(NA, top_cumul*1.08),
+      limits=c(NA, top_cumul*1.03),
       breaks=seq(0, 100, by = 20)
     ) +
     scale_fill_brewer(palette="Paired") +
@@ -159,7 +159,7 @@ output$pareto <- renderPlot({
     p <- p +
       geom_text(
         data=hovered_pareto() %>% filter(Nazione != top_nazione),
-        aes(y=Percentuale, label=format_percent(Percentuale)),
+        aes(x=Nazione, y=Percentuale, label=format_percent(Percentuale)),
         position = position_dodge(width = .9),
         vjust = -0.5,
         size = 5
