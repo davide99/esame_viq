@@ -105,6 +105,7 @@ Svantaggi:
 
 * Confronto tra aree impreciso (legge di Stevens)
 * Le etichette *OPEC* e *non-OPEC* potrebbero essere elementi distrattivi
+
 ```{r treemap, echo=FALSE}
 plotOutput("treemap")
 ```
@@ -138,9 +139,14 @@ observeEvent(input$h_waffle,{
 
 brew_palette <- "Set1"
 
-output$pareto <- renderPlot({
+validate_cat <- function(){
   #Se nessuna categoria selezionata=>non mostro niente
-  req(categoria())
+  if (length(categoria())==0)
+    validate("Selezionare almeno una categoria")
+}
+
+output$pareto <- renderPlot({
+  validate_cat()
   
   #Salvo:
   # -nazione con perc. maggiore: per evitare di stampare la stessa percentuale
@@ -194,7 +200,7 @@ output$pareto <- renderPlot({
 })
 
 output$treemap <- renderPlot({
-  req(categoria())
+  validate_cat()
   
   filtered_data() %>%
     ggplot(aes(area=Percentuale, fill=OPEC, label=Nazione, subgroup=OPEC)) +
@@ -224,7 +230,7 @@ output$treemap <- renderPlot({
 })
 
 output$waffle <- renderPlot({
-  req(categoria())
+  validate_cat()
 
   labels_pos <- 
     waffle_data() %>%
