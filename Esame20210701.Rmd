@@ -110,6 +110,15 @@ plotOutput("treemap")
 ```
 
 ### Waffle
+Il terzo redesign presentato è un *waffle chart*. Vantaggi:
+
+* Direct labeling delle nazioni
+* Di impatto e semplice da comprendere
+
+Svantaggi:
+
+* Rainbow effect a causa delle numerose nazioni
+* Nessuna suddivisione tra *OPEC* e *non-OPEC*
 ```{r, echo=FALSE}
 plotOutput("waffle", hover=hoverOpts(id="h_waffle",delayType="debounce",delay=100))
 ```
