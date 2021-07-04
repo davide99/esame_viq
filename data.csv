@@ -1,16 +1,16 @@
 Nazione,Percentuale,Bln_barili,OPEC
-Libya,2.8,48,TRUE
-Venezuela,17.8,304,TRUE
-Kuwait,5.9,102,TRUE
-Nigeria,2.1,37,TRUE
-Iraq,8.4,145,TRUE
-UAE,5.6,98,TRUE
-Saudi Arabia,17.2,298,TRUE
-Iran,9.0,156,TRUE
-Canada,9.8,170,FALSE
-Russia,6.2,107,FALSE
-Other,6.5,NA,FALSE
-Qatar,1.5,25.2,FALSE
-China,1.5,26.2,FALSE
-US,4.0,69,FALSE
-Kazakhstan,1.7,30,FALSE
+Libya,2.8,48,Si
+Venezuela,17.8,304,Si
+Kuwait,5.9,102,Si
+Nigeria,2.1,37,Si
+Iraq,8.4,145,Si
+UAE,5.6,98,Si
+Saudi Arabia,17.2,298,Si
+Iran,9.0,156,Si
+Canada,9.8,170,No
+Russia,6.2,107,No
+Other,6.5,NA,Both
+Qatar,1.5,25.2,No
+China,1.5,26.2,No
+US,4.0,69,No
+Kazakhstan,1.7,30,No

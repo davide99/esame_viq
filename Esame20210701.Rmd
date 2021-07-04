@@ -44,12 +44,21 @@ redesign di seguito ho tenuto conto della corretta interpretazione.
 ```{r generazione dati, echo=FALSE}
 OPEC_cat <- "OPEC"
 nonOPEC_cat <- "non-OPEC"
+mixed_cat <- "mixed"
 
 data <-
   read_csv("data.csv",col_types = cols()) %>%
   mutate(
     Bln_barili=if_else(is.na(Bln_barili), 107*Percentuale/6.2, Bln_barili),
-    OPEC=if_else(OPEC, OPEC_cat, nonOPEC_cat)
+    OPEC=if_else(
+      OPEC=="Si",
+      OPEC_cat,
+      if_else(
+        OPEC=="No",
+        nonOPEC_cat,
+        mixed_cat
+      )
+    )
   )
 
 #Funzione per stampa percentuale con 1 cifra decimale
@@ -58,7 +67,7 @@ format_percent = function(x) {
 }
 
 
-categorie <- c(OPEC_cat, nonOPEC_cat)
+categorie <- c(OPEC_cat, nonOPEC_cat, mixed_cat)
 checkboxGroupInput("categoria", "Categorie", categorie, categorie)
 categoria <- reactive(input$categoria)
 
@@ -110,13 +119,15 @@ plotOutput("pareto", hover=hoverOpts(id="h_pareto", delayType="debounce", delay=
 ### Treemap
 Il secondo redesign è la *treemap*. Vantaggi:
 
-* Direct labeling delle nazioni *OPEC* e *non-OPEC*
+* Direct labeling delle nazioni *OPEC*, *non-OPEC* e *mixed*
 * Facile individuare le nazioni con i maggiori giacimenti
 
 Svantaggi:
 
 * Confronto tra aree impreciso (legge di Stevens)
-* Le etichette *OPEC* e *non-OPEC* potrebbero essere elementi distrattivi
+* Le etichette *OPEC*, *non-OPEC* e *mixed* potrebbero essere elementi
+  distrattivi e, in generale, potrebbero peggiorare le chiarezza delle etichette
+  con i nomi delle nazioni
 
 ```{r treemap, echo=FALSE}
 plotOutput("treemap")
@@ -131,7 +142,7 @@ Il terzo redesign presentato è un *waffle chart*. Vantaggi:
 Svantaggi:
 
 * Rainbow effect a causa delle numerose nazioni
-* Nessuna suddivisione tra *OPEC* e *non-OPEC*
+* Nessuna suddivisione tra *OPEC*, *non-OPEC* e *mixed*
 
 Hover su un quadrato per avere maggiori informazioni.
 ```{r, echo=FALSE}
@@ -196,7 +207,7 @@ output$pareto <- renderPlot({
     theme(
       plot.title=element_text(hjust = 0.5),
       legend.title=element_blank(),
-      legend.position=if_else(length(categoria())==2, "right", "none")
+      legend.position=if_else(length(categoria())==1, "none", "right")
     ) +
     labs(
       title="Distribuzione dei giacimenti di petrolio",
@@ -230,11 +241,11 @@ output$treemap <- renderPlot({
       place="centre",
       grow=TRUE,
       #nascondo OPEC se ho solo una categoria
-      alpha=if_else(length(categoria())==2, 0.5, 0),
+      alpha=if_else(length(categoria())==1, 0, 0.5),
       colour="black",
       fontface="italic",
       min.size=0,
-      angle=45
+      angle=20
     ) +
     geom_treemap_text(
       aes(label=paste0(Nazione, "\n", format_percent(Percentuale))),
