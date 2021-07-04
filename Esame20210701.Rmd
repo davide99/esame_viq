@@ -8,7 +8,6 @@ runtime: shiny
 ```{r import delle librerie,include=FALSE}
 library(tidyverse)
 library(shiny)
-library(shinyjs)
 library(ggrepel)
 library(magrittr)
 library(readr)
@@ -82,6 +81,7 @@ waffle_data <- reactive({
       Nazione=as.character(Nazione),
       Bln_barili=Bln_barili/10
     ) %>%
+    #Ripeto per ogni 10*Bln_barili
     slice(rep(1:n(), Bln_barili)) %>%
     waffle_iron(aes_d(group=Nazione))
 })
@@ -104,7 +104,7 @@ Svantaggi:
 Per risolvere lo svantaggio è stata inserita la possibilità di leggere la
 percentuale di ogni barra posizionandosi sulla punta della stessa.
 ```{r pareto, echo=FALSE}
-plotOutput("pareto", hover=hoverOpts(id="h_pareto",delayType="debounce",delay=100))
+plotOutput("pareto", hover=hoverOpts(id="h_pareto", delayType="debounce", delay=100))
 ```
 
 ### Treemap
@@ -135,18 +135,33 @@ Svantaggi:
 
 Hover su un quadrato per avere maggiori informazioni.
 ```{r, echo=FALSE}
-plotOutput("waffle", hover=hoverOpts(id="h_waffle",delayType="debounce",delay=100))
+plotOutput("waffle", hover=hoverOpts(id="h_waffle", delayType="debounce", delay=100))
 ```
 
 ```{r, echo=FALSE}
 hovered_pareto <- reactiveVal(NULL)
 observeEvent(input$h_pareto,{
-  hovered_pareto(nearPoints(pareto_data(), input$h_pareto, threshold=30, yvar="Percentuale", maxpoints=1))
+  hovered_pareto(
+    nearPoints(
+      pareto_data(),
+      input$h_pareto,
+      threshold=30,
+      yvar="Percentuale",
+      maxpoints=1
+    )
+  )
 })
 
 hovered_waffle <- reactiveVal(NULL)
 observeEvent(input$h_waffle,{
-  hovered_waffle(nearPoints(waffle_data(), input$h_waffle, threshold=10, maxpoints=1))
+  hovered_waffle(
+    nearPoints(
+      waffle_data(),
+      input$h_waffle,
+      threshold=10,
+      maxpoints=1
+    )
+  )
 })
 
 brew_palette <- "Set1"
@@ -160,11 +175,7 @@ validate_cat <- function(){
 output$pareto <- renderPlot({
   validate_cat()
   
-  #Salvo:
-  # -nazione con perc. maggiore: per evitare di stampare la stessa percentuale
-  #  2 volte, cioè sulla geom_path e sulla geom_bar
-  # -massima percentuale cumulata: per impostare il limite delle x
-  top_nazione <- (pareto_data() %>% filter(Percentuale==max(Percentuale)))$Nazione
+  #Salvo massima percentuale cumulata per impostare il limite delle x
   top_cumul <- (pareto_data() %>% filter(cumul==max(cumul)))$cumul
   
   pareto_data() %>%
@@ -193,18 +204,15 @@ output$pareto <- renderPlot({
       y="Percentuale"
     ) -> p
   
-  if (
-    !is.null(hovered_pareto()) &&
-    dim(hovered_pareto() %>% filter(Nazione != top_nazione))[1]>0
-  ){
+  if (!is.null(hovered_pareto()) && dim(hovered_pareto())[1]>0){
     p <- p +
       geom_label(
-        data=hovered_pareto() %>% filter(Nazione != top_nazione),
+        data=hovered_pareto(),
         aes(x=Nazione, y=Percentuale, label=format_percent(Percentuale)),
-        position = position_dodge(width = .9),
-        vjust = -0.5,
-        size = 5,
-        fill = "white"
+        position=position_dodge(width = .9),
+        vjust=-0.5,
+        size=5,
+        fill="white"
       ) 
   }
   
@@ -286,28 +294,28 @@ output$waffle <- renderPlot({
     geom_text_repel(
       data=top_labels_pos,
       aes(label=group, x=x, y=y),
-      ylim  = c(y_max + 1,30),
-      box.padding = 0.5,
-      segment.size = 0.5,
-      segment.linetype = 1,
-      segment.color = "grey50"
+      ylim=c(y_max+1, 30),
+      box.padding=0.5,
+      segment.size=0.5,
+      segment.linetype=1,
+      segment.color="grey50"
     ) +
     #etichette sotto
     geom_text_repel(
       data=bottom_labels_pos,
       aes(label=group, x=x, y=y),
-      ylim  = c(0,-20),
-      box.padding = 0.5,
-      segment.size = 0.5,
-      segment.linetype = 1,
-      segment.color = "grey50"
+      ylim=c(0, -20),
+      box.padding=0.5,
+      segment.size=0.5,
+      segment.linetype=1,
+      segment.color="grey50"
     ) +
     discrete_scale(
       aesthetics="fill",
       scale_name="waffle",
       palette=waffle_pal()
     ) +
-    scale_y_discrete(expand = expansion(mult = 0.2))+
+    scale_y_discrete(expand=expansion(mult=0.2))+
     ylab("1 quad = 10 bln di barili") +
     theme_waffle() +
     theme(
@@ -327,9 +335,9 @@ output$waffle <- renderPlot({
       geom_label(
         data=joined_data,
         aes(x=x, y=y, label=paste0(group, "\n", format_percent(Percentuale))),
-        hjust = 0,
-        size = 5,
-        fill = "white"
+        hjust=0,
+        size=5,
+        fill="white"
       ) 
   }
   
