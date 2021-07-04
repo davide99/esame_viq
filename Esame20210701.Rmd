@@ -9,7 +9,6 @@ runtime: shiny
 library(tidyverse)
 library(shiny)
 library(shinyjs)
-library(patchwork)
 library(ggrepel)
 library(magrittr)
 library(readr)
@@ -17,8 +16,6 @@ library(ggplot2)
 library(treemapify)
 devtools::install_github("liamgilbey/ggwaffle")
 library(ggwaffle)
-library(ggrepel)
-useShinyjs(rmd=TRUE)
 
 ```
 
@@ -50,9 +47,6 @@ format_percent = function(x) {
 }
 
 
-radioButtons("tipo_grafico", "Tipo grafico", c("Pareto","Treemap","Waffle"))
-tipo_grafico <- reactive(input$tipo_grafico)
-
 categorie <- c(OPEC_cat, nonOPEC_cat)
 checkboxGroupInput("categoria", "Categorie", categorie, categorie)
 categoria <- reactive(input$categoria)
@@ -79,11 +73,25 @@ waffle_data <- reactive({
     slice(rep(1:n(), Bln_barili)) %>%
     waffle_iron(aes_d(group=Nazione))
 })
+```
 
+
+### Pareto
+```{r, echo=FALSE}
 plotOutput("pareto", hover=hoverOpts(id="h_pareto",delayType="debounce",delay=100))
-plotOutput("treemap")
-plotOutput("waffle", hover=hoverOpts(id="h_waffle",delayType="debounce",delay=100))
+```
 
+### Treemap
+```{r, echo=FALSE}
+plotOutput("treemap")
+```
+
+### Waffle
+```{r, echo=FALSE}
+plotOutput("waffle", hover=hoverOpts(id="h_waffle",delayType="debounce",delay=100))
+```
+
+```{r, echo=FALSE}
 hovered_pareto <- reactiveVal(NULL)
 observeEvent(input$h_pareto,{
   hovered_pareto(nearPoints(pareto_data(), input$h_pareto, threshold=30, xvar="Percentuale", maxpoints=1))
@@ -94,14 +102,9 @@ observeEvent(input$h_waffle,{
   hovered_waffle(nearPoints(waffle_data(), input$h_waffle, threshold=10, maxpoints=1))
 })
 
-#observeEvent(tipo_grafico(),{
-#  toggleElement(id="pareto", condition=tipo_grafico()=="Pareto")
-#})
-
 output$pareto <- renderPlot({
   #Se nessuna categoria selezionata=>non mostro niente
   req(categoria())
-  req(tipo_grafico() == 'Pareto')
   
   #Salvo:
   # -nazione con perc. maggiore: per evitare di stampare la stessa percentuale
@@ -155,9 +158,7 @@ output$pareto <- renderPlot({
 
 output$treemap <- renderPlot({
   req(categoria())
-  req(tipo_grafico() == 'Treemap')
-  shinyjs::hide("pareto")
-
+  
   filtered_data() %>%
     ggplot(aes(area=Percentuale, fill=OPEC, label=Nazione, subgroup=OPEC)) +
     geom_treemap() +
@@ -186,7 +187,6 @@ output$treemap <- renderPlot({
 
 output$waffle <- renderPlot({
   req(categoria())
-  req(tipo_grafico() == 'Waffle')
 
   labels_pos <- 
     waffle_data() %>%
