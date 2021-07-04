@@ -77,20 +77,21 @@ waffle_data <- reactive({
 
 
 ### Pareto chart
-Il primo redesign presentato è il pareto chart. Ha i seguenti vantaggi:
+Il primo redesign presentato è il *pareto chart*. Ha i seguenti vantaggi:
 
 * È possibile leggere l'andamento della percentuale cumulativa: dalla pendenza
   della spezzata arancione è possibile notare come le prime nazioni abbiano
   significativamente più giacimenti delle ultime
-* L'ordinamento per percentuale crescente facilita la lettura del grafico
+* L'ordinamento per percentuale decrescente facilita la lettura del grafico
 
 Svantaggi:
 
-* A causa delle numerose nazioni è stato necessario utilizzare come base un bar
-  plot orizzontale, per evitare che le etichette relative alle nazioni si
-  sovrapponessero o che venissero scritte in verticale (sacrificandone la
-  chiarezza)
-```{r, echo=FALSE}
+* A causa della retta delle percentuali cumulate, apprezzare la percentuale dei
+  paesi con meno giacimenti risulta difficile
+  
+Per risolvere lo svantaggio è stata inserita la possibilità di leggere la
+percentuale di ogni barra posizionandosi sulla punta della stessa.
+```{r pareto, echo=FALSE}
 plotOutput("pareto", hover=hoverOpts(id="h_pareto",delayType="debounce",delay=100))
 ```
 
