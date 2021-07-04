@@ -29,6 +29,18 @@ Si consideri il seguente frammento di grafico pubblicato dal [Visual Capitalist]
 
 Riprogettare la visualizzazione in modo da risolvere i problemi evidenziati nell'analisi.
 
+### Nota
+Nella prima parte dell'esame avevo riportato (in modo non corretto) un problema
+riguardo la *data quality*: a causa di una cattiva interpretazione del grafico,
+non mi ero reso conto che sia il donut da contorno al grafico, sia la voce
+"Other", di fatto, codificavano la stessa informazione complementare. Durante
+lo svolgimento della seconda parte, mi sono reso conto che
+$100\%-93.5\%=6.5\%=Other$, mentre avevo, precedentemente, considerato che le
+percentuali nel grafico fossero riferite al $93.5\%$. Di fatto, questo
+rappresenta un problema di *clarity* e di *understandability* del grafico
+originale (ma anche *utility* considerando l'informazione ripetuta). Nei
+redesign di seguito ho tenuto conto della corretta interpretazione.
+
 
 ```{r generazione dati, echo=FALSE}
 OPEC_cat <- "OPEC"
