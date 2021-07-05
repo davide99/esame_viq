@@ -160,8 +160,8 @@ Svantaggi:
 
 * Confronto tra aree impreciso (legge di Stevens)
 * Le etichette *OPEC*, *non-OPEC* e *mixed* potrebbero essere elementi
-  distrattivi e, in generale, potrebbero peggiorare le chiarezza delle etichette
-  con i nomi delle nazioni
+  distrattivi e, in generale, potrebbero peggiorare la leggibilità delle
+  etichette con i nomi delle nazioni
 
 ```{r treemap, echo=FALSE}
 plotOutput("treemap", hover=hoverOpts(id="h_treemap", delayType="debounce", delay=100))
@@ -416,7 +416,7 @@ output$treemap_info <- renderUI({
       "<i>Bilioni di barili</i>: ", format(round(h_data$Bln_barili, 1), nsmall=1)
     ))
   }else{
-    "Posizionarsi su un rettangolo per avere maggiori informazioni"
+    HTML("Posizionarsi su un rettangolo per avere maggiori informazioni<br><br><br>")
   }
 })
 
