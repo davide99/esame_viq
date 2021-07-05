@@ -125,7 +125,8 @@ Il primo redesign presentato è il *pareto chart*. Ha i seguenti vantaggi:
 Svantaggi:
 
 * A causa della retta delle percentuali cumulate, apprezzare la percentuale dei
-  paesi con meno giacimenti risulta difficile
+  paesi con meno giacimenti risulta difficile. Si potrebbe pensare di usare una
+  scala logaritmica, ma si avrebbe un $lie factor>1$
   
 Per risolvere lo svantaggio è stata inserita la possibilità di leggere la
 percentuale di ogni barra posizionandosi sulla punta della stessa.
