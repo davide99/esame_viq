@@ -344,7 +344,13 @@ output$waffle <- renderPlot({
     ) +
     labs(title="Distribuzione dei giacimenti di petrolio") -> p
   
-  if (!is.null(hovered_waffle()) && dim(hovered_waffle())[1]>0){
+  if (
+    !is.null(hovered_waffle()) &&
+    dim(hovered_waffle())[1]>0 &&
+    #Necessario perchè a volte il tooltip non viene aggiornato e punta ad un
+    #quadrato che non esiste più
+    hovered_waffle()$group %in% filtered_data()$Nazione
+  ){
     joined_data <- 
       hovered_waffle() %>%
       inner_join(filtered_data(), by=c("group"="Nazione")) %>%
