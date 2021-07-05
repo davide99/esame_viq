@@ -122,25 +122,8 @@ percentuale di ogni barra posizionandosi sulla punta della stessa.
 plotOutput("pareto", hover=hoverOpts(id="h_pareto", delayType="debounce", delay=100))
 ```
 
-### Treemap
-Il secondo redesign è la *treemap*. Vantaggi:
-
-* Direct labeling delle nazioni *OPEC*, *non-OPEC* e *mixed*
-* Facile individuare le nazioni con i maggiori giacimenti
-
-Svantaggi:
-
-* Confronto tra aree impreciso (legge di Stevens)
-* Le etichette *OPEC*, *non-OPEC* e *mixed* potrebbero essere elementi
-  distrattivi e, in generale, potrebbero peggiorare le chiarezza delle etichette
-  con i nomi delle nazioni
-
-```{r treemap, echo=FALSE}
-plotOutput("treemap")
-```
-
 ### Waffle
-Il terzo redesign presentato è un *waffle chart*. Vantaggi:
+Il secondo redesign presentato è un *waffle chart*. Vantaggi:
 
 * Direct labeling delle nazioni
 * Di impatto e semplice da comprendere
@@ -154,6 +137,23 @@ Svantaggi:
 Hover su un quadrato per avere maggiori informazioni.
 ```{r, echo=FALSE}
 plotOutput("waffle", hover=hoverOpts(id="h_waffle", delayType="debounce", delay=100))
+```
+
+### Treemap
+Il terzo redesign è la *treemap*. Vantaggi:
+
+* Direct labeling delle nazioni *OPEC*, *non-OPEC* e *mixed*
+* Facile individuare le nazioni con i maggiori giacimenti
+
+Svantaggi:
+
+* Confronto tra aree impreciso (legge di Stevens)
+* Le etichette *OPEC*, *non-OPEC* e *mixed* potrebbero essere elementi
+  distrattivi e, in generale, potrebbero peggiorare le chiarezza delle etichette
+  con i nomi delle nazioni
+
+```{r treemap, echo=FALSE}
+plotOutput("treemap")
 ```
 
 ```{r, echo=FALSE}
@@ -241,36 +241,6 @@ output$pareto <- renderPlot({
   }
   
   p
-})
-
-output$treemap <- renderPlot({
-  validate_cat()
-  
-  filtered_data() %>%
-    ggplot(aes(area=Percentuale, fill=OPEC, label=Nazione, subgroup=OPEC)) +
-    geom_treemap() +
-    geom_treemap_subgroup_border() +
-    geom_treemap_subgroup_text(
-      place="centre",
-      grow=TRUE,
-      #nascondo OPEC se ho solo una categoria
-      alpha=if_else(length(categoria())==1, 0, 0.5),
-      colour="black",
-      fontface="italic",
-      min.size=0,
-      angle=20
-    ) +
-    geom_treemap_text(
-      aes(label=paste0(Nazione, "\n", format_percent(Percentuale))),
-      colour="white",
-      place="centre"
-    ) +
-    theme(
-      plot.title=element_text(hjust = 0.5),
-      legend.position = 0
-    ) +
-    scale_fill_brewer(palette=brew_palette) +
-    labs(title="Distribuzione dei giacimenti di petrolio")
 })
 
 output$waffle <- renderPlot({
@@ -368,5 +338,34 @@ output$waffle <- renderPlot({
   p
 })
 
+output$treemap <- renderPlot({
+  validate_cat()
+  
+  filtered_data() %>%
+    ggplot(aes(area=Percentuale, fill=OPEC, label=Nazione, subgroup=OPEC)) +
+    geom_treemap() +
+    geom_treemap_subgroup_border() +
+    geom_treemap_subgroup_text(
+      place="centre",
+      grow=TRUE,
+      #nascondo OPEC se ho solo una categoria
+      alpha=if_else(length(categoria())==1, 0, 0.5),
+      colour="black",
+      fontface="italic",
+      min.size=0,
+      angle=20
+    ) +
+    geom_treemap_text(
+      aes(label=paste0(Nazione, "\n", format_percent(Percentuale))),
+      colour="white",
+      place="centre"
+    ) +
+    theme(
+      plot.title=element_text(hjust = 0.5),
+      legend.position = 0
+    ) +
+    scale_fill_brewer(palette=brew_palette) +
+    labs(title="Distribuzione dei giacimenti di petrolio")
+})
 
 ```
