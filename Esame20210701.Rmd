@@ -101,6 +101,7 @@ waffle_data <- reactive({
     slice(rep(1:n(), Bln_barili)) %>%
     waffle_iron(aes_d(group=Nazione))
 })
+
 ```
 
 
@@ -154,7 +155,8 @@ Svantaggi:
   con i nomi delle nazioni
 
 ```{r treemap, echo=FALSE}
-plotOutput("treemap")
+plotOutput("treemap", hover=hoverOpts(id="h_treemap", delayType="debounce", delay=100))
+htmlOutput("treemap_info")
 ```
 
 ```{r, echo=FALSE}
@@ -181,6 +183,26 @@ observeEvent(input$h_waffle,{
       maxpoints=1
     )
   )
+})
+
+hovered_treemap <- reactiveVal(NULL)
+observeEvent(input$h_treemap,{
+  #Ottengo coordinate rettangoli treemap
+  coords <- treemapify(
+    filtered_data(),
+    area="Percentuale", subgroup="OPEC",
+    xlim=c(0, 1), ylim=c(0, 1)
+  )
+  
+  #Filtro in base alle coordinate
+  hovered <- coords %>%
+    filter(xmin < input$h_treemap$x) %>%
+    filter(xmax > input$h_treemap$x) %>%
+    filter(ymin < input$h_treemap$y) %>%
+    filter(ymax > input$h_treemap$y)
+  
+  #Salvo nel reactiveval
+  hovered_treemap(hovered)
 })
 
 brew_palette <- "Set1"
@@ -367,10 +389,37 @@ output$treemap <- renderPlot({
     ) +
     theme(
       plot.title=element_text(hjust = 0.5),
-      legend.position = 0
+      legend.position = 0,
+      axis.title.x=element_blank(),
+      axis.text.x=element_blank(),
+      axis.ticks.x=element_blank(),
+      axis.title.y=element_blank(),
+      axis.text.y=element_blank(),
+      axis.ticks.y=element_blank()
     ) +
     scale_fill_brewer(palette=brew_palette) +
     labs(title="Distribuzione dei giacimenti di petrolio")
+  
+})
+
+output$treemap_info <- renderUI({
+  if (!is.null(hovered_treemap()) && dim(hovered_treemap())[1]>0){
+    h_data <- 
+      hovered_treemap() %>%
+      mutate(
+        OPEC=if_else(OPEC=="OPEC",
+                "Si",
+                if_else(OPEC=="non-OPEC",
+                        "No",
+                        "Mixed"
+      )))
+    
+    HTML(paste0(
+      "<b>" , h_data$Nazione, "</b><br>",
+      "<i>OPEC</i>: ", h_data$OPEC, "<br>",
+      "<i>Bilioni di barili</i>: ", format(round(h_data$Bln_barili, 1), nsmall=1)
+    ))
+  }
 })
 
 ```
