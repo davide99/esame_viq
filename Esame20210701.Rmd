@@ -102,6 +102,15 @@ waffle_data <- reactive({
     waffle_iron(aes_d(group=Nazione))
 })
 
+treemap_coords <- reactive({
+  #Ottengo coordinate rettangoli treemap
+  treemapify(
+    filtered_data(),
+    area="Percentuale", subgroup="OPEC",
+    xlim=c(0, 1), ylim=c(0, 1)
+  )
+})
+
 ```
 
 
@@ -187,15 +196,8 @@ observeEvent(input$h_waffle,{
 
 hovered_treemap <- reactiveVal(NULL)
 observeEvent(input$h_treemap,{
-  #Ottengo coordinate rettangoli treemap
-  coords <- treemapify(
-    filtered_data(),
-    area="Percentuale", subgroup="OPEC",
-    xlim=c(0, 1), ylim=c(0, 1)
-  )
-  
   #Filtro in base alle coordinate
-  hovered <- coords %>%
+  hovered <- treemap_coords() %>%
     filter(xmin < input$h_treemap$x) %>%
     filter(xmax > input$h_treemap$x) %>%
     filter(ymin < input$h_treemap$y) %>%
@@ -375,7 +377,7 @@ output$treemap <- renderPlot({
     geom_treemap_subgroup_text(
       place="centre",
       grow=TRUE,
-      #nascondo OPEC se ho solo una categoria
+      #nascondo legenda se ho solo una categoria
       alpha=if_else(length(categoria())==1, 0, 0.5),
       colour="black",
       fontface="italic",
@@ -409,10 +411,12 @@ output$treemap_info <- renderUI({
       )))
     
     HTML(paste0(
-      "<b>" , h_data$Nazione, "</b><br>",
+      "<b>", h_data$Nazione, "</b><br>",
       "<i>OPEC</i>: ", h_data$OPEC, "<br>",
       "<i>Bilioni di barili</i>: ", format(round(h_data$Bln_barili, 1), nsmall=1)
     ))
+  }else{
+    "Posizionarsi su un rettangolo per avere maggiori informazioni"
   }
 })
 
