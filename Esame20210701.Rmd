@@ -222,7 +222,13 @@ output$pareto <- renderPlot({
       y="Percentuale"
     ) -> p
   
-  if (!is.null(hovered_pareto()) && dim(hovered_pareto())[1]>0){
+  if (
+    !is.null(hovered_pareto()) &&
+    dim(hovered_pareto())[1]>0 &&
+    #Necessario perchè a volte il tooltip non viene aggiornato e punta ad una
+    #barra che non esiste più
+    hovered_pareto()$Nazione %in% pareto_data()$Nazione
+  ){
     p <- p +
       geom_label(
         data=hovered_pareto(),
