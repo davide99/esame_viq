@@ -15,6 +15,7 @@ library(ggplot2)
 library(treemapify)
 devtools::install_github("liamgilbey/ggwaffle")
 library(ggwaffle)
+library(ggtext)
 
 ```
 
@@ -326,9 +327,13 @@ output$waffle <- renderPlot({
       select(x, y, group, Percentuale)
     
     p <- p +
-      geom_label(
+      geom_richtext(
         data=joined_data,
-        aes(x=x, y=y, label=paste0(group, "\n", format_percent(Percentuale))),
+        aes(
+          x=x,
+          y=y,
+          label=paste0("<b>", group, "</b><br>\n", format_percent(Percentuale))
+        ),
         hjust=0,
         size=5,
         fill="white"
