@@ -256,9 +256,17 @@ output$pareto <- renderPlot({
     hovered_pareto()$Nazione %in% pareto_data()$Nazione
   ){
     p <- p +
-      geom_label(
+      geom_richtext(
         data=hovered_pareto(),
-        aes(x=Nazione, y=Percentuale, label=format_percent(Percentuale)),
+        aes(
+          x=Nazione,
+          y=Percentuale,
+          label=paste0(
+            format_percent(Percentuale),
+            "<br><i>Bln di barili</i>: ",
+            format(round(Bln_barili, 1), nsmall=1)
+          )
+        ),
         position=position_dodge(width = .9),
         vjust=-0.5,
         size=5,
